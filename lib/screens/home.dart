@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranjy_brayan/screens/hotel_details_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _bottomNavIndex = 0;
   bool isLoading = true;
+  String? userName;
 
   List<IconData> iconList = [
     Icons.home,
@@ -21,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Icons.favorite,
     Icons.settings,
   ];
+
   List<dynamic> hotelsData = [];
 
   void fetchData() async {
@@ -55,11 +60,40 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> checkSignedInUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // User is signed in, retrieve their name from Firestore
+      try {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        setState(() {
+          userName = userSnapshot['firstName'];
+        });
+      } catch (e) {
+        print('Error retrieving user data: $e');
+      }
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchData();
+    checkSignedInUser();
+  }
+
+  void changePage(index) {
+    switch (index) {
+      case 1:
+        break;
+      default:
+    }
   }
 
   @override
@@ -87,8 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(
                     width: 8,
                   ),
-                  const Text(
-                    "Hello, User!",
+                  Text(
+                    "بەخێربێیت $userName",
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.black,
@@ -133,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Icon(Icons.search),
                           SizedBox(width: 8),
-                          Text('Location'),
+                          Text('ناوچە'),
                         ],
                       ),
                       Icon(Icons.filter_list),
@@ -165,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Icon(Icons.date_range),
                       SizedBox(width: 8),
-                      Text('Date'),
+                      Text('کات'),
                     ],
                   ),
                 ),
@@ -201,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Icon(Icons.person), // User icon at the start
                           SizedBox(width: 8),
-                          Text('Guests'),
+                          Text('میوان'),
                         ],
                       ),
                       Row(
@@ -235,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   // Handle guests filter
                 },
-                child: const Text('Search'),
+                child: const Text('گەڕان'),
               ),
               const SizedBox(
                 height: 25,
@@ -246,50 +280,77 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : Expanded(
                       child: ListView.builder(
-                      itemCount: hotelsData.length - 1, // Exclude the last item
-                      itemBuilder: (context, index) {
-                        final hotel = hotelsData[index];
-                        if (hotel is Map<String, dynamic>) {
-                          return Card(
-                            elevation: 3,
-                            margin: EdgeInsets.all(8),
-                            child: ListTile(
-                              leading: Image.network(
-                                'https://example.com/your_temp_image_url.jpg',
-                                width: 50, // Adjust the width as needed
-                                height: 50, // Adjust the height as needed
-                                fit: BoxFit.cover, // Adjust the fit as needed
-                              ),
-                              title: Text(hotel['name'] ?? ''),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(hotel['telephone'] ?? ''),
-                                  SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Rating: ',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        hotel['reviews']['rating'].toString() ??
-                                            '',
-                                        style: TextStyle(color: Colors.yellow),
-                                      ),
-                                    ],
+                        itemCount:
+                            hotelsData.length - 1, // Exclude the last item
+                        itemBuilder: (context, index) {
+                          final hotel = hotelsData[index];
+                          if (hotel is Map<String, dynamic>) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        HotelDetailsScreen(hotel: hotel),
                                   ),
-                                ],
+                                );
+                              },
+                              child: Card(
+                                elevation: 3,
+                                margin: const EdgeInsets.all(8),
+                                child: Column(
+                                  children: [
+                                    Image.network(
+                                      'https://media.istockphoto.com/id/104731717/photo/luxury-resort.jpg?s=612x612&w=0&k=20&c=cODMSPbYyrn1FHake1xYz9M8r15iOfGz9Aosy9Db7mI=',
+                                      height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            hotel['name'] ?? '',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(hotel['telephone'] ?? ''),
+                                          const SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                'Rating: ',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                hotel['reviews']['rating']
+                                                    .toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.yellow),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        } else {
-                          // If it's not a hotel item, return an empty container
-                          return Container();
-                        }
-                      },
-                    )),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
+                    ),
             ],
           ),
         ),
@@ -298,12 +359,12 @@ class _HomeScreenState extends State<HomeScreen> {
         icons:
             iconList, // Make sure iconList is defined or replace it with your icon list
         activeIndex: _bottomNavIndex,
+        activeColor: Colors.yellow,
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.verySmoothEdge,
         leftCornerRadius: 32,
         rightCornerRadius: 32,
         onTap: (index) => setState(() => _bottomNavIndex = index),
-        // Other parameters for customization
       ),
     );
   }

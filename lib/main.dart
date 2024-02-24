@@ -18,6 +18,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        // Wrap the entire app with Directionality for RTL support
+        return Directionality(
+          textDirection: TextDirection.rtl, // Set text direction to RTL
+          child: child!,
+        );
+      },
       debugShowCheckedModeBanner: false,
       title: 'Ranjy Brayan',
       theme: ThemeData(
