@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221472489681",
+    "project_id": "ranjy-brayan",
+    "storage_bucket": "ranjy-brayan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221472489681:android:50bbbfcd238a97b515c5f0",
+        "android_client_info": {
+          "package_name": "com.example.ranjy_brayan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmBNLUdqkz0wt4j5MvBsnkEFAFtNg1pRc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
