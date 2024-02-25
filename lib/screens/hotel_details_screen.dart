@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ranjy_brayan/screens/MoreDetailsScreen.dart';
 
 class HotelDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> hotel;
@@ -12,76 +14,153 @@ class HotelDetailsScreen extends StatefulWidget {
 class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    List<String> images = [
+      widget.hotel['photo1'] ?? '',
+      widget.hotel['photo2'] ?? '',
+      widget.hotel['photo3'] ?? '',
+      widget.hotel['photo4'] ?? '',
+      widget.hotel['photo5'] ?? '',
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.hotel['name'].toString().substring(0, 20)),
+        title: Text(
+          widget.hotel['hotel_name'] ?? '',
+          style: const TextStyle(fontSize: 20),
+        ),
         backgroundColor: Colors.yellowAccent,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 300,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(18.0),
-                  bottomRight: Radius.circular(18.0),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://media.istockphoto.com/id/104731717/photo/luxury-resort.jpg?s=612x612&w=0&k=20&c=cODMSPbYyrn1FHake1xYz9M8r15iOfGz9Aosy9Db7mI=',
-                  ),
-                  fit: BoxFit.cover,
-                ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 300.0,
+                viewportFraction: 1.0,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                autoPlayCurve: Curves.easeInOut,
+                enlargeCenterPage: true,
               ),
+              items: images.map((image) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18.0),
+                        image: DecorationImage(
+                          image: NetworkImage(image),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.hotel['name'] ?? '',
-                    style: const TextStyle(
+                  const Text(
+                    'Overview',
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.hotel['telephone'] ?? '',
+                    widget.hotel['overview'] ?? '',
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MoreDetailsScreen(
+                              overview: widget.hotel['overview'] ?? ''),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Read more',
+                      style: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Text(
-                        'Rating: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                      const Icon(
+                        Icons.location_on,
+                        color: Colors.yellow,
+                        size: 30,
                       ),
+                      const SizedBox(width: 8),
                       Text(
-                        widget.hotel['reviews']['rating'].toString(),
+                        '${widget.hotel['addressline1']}, ${widget.hotel['city']},${widget.hotel['country']}',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines:
+                            2, // Set the maximum number of lines you want to display
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.date_range,
+                        color: Colors.yellow,
+                        size: 30,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Check-in: ${widget.hotel['checkin']}, Check-out: ${widget.hotel['checkout']}',
                         style: const TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Vendor: ${widget.hotel['vendor1'] ?? 'N/A'}',
-                    style: const TextStyle(
-                      fontSize: 16,
+                  const Text(
+                    'Facilities',
+                    style: TextStyle(
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 90),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          FacilityCircle('Wi-Fi'),
+                          FacilityCircle('Fitness Center'),
+                          FacilityCircle('Sauna'),
+                          FacilityCircle('Outdoor Pool'),
+                          FacilityCircle('Spa'),
+                          FacilityCircle('Massage'),
+                          // Add more facilities as needed
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -91,10 +170,8 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Handle the action when the FAB is pressed
-        },
-        label: Text('Price: ${widget.hotel['price1'] ?? 'N/A'}'),
+        onPressed: () {},
+        label: Text('Price: ${widget.hotel['rates_from'] ?? 'N/A'} USD'),
         icon: const Icon(Icons.attach_money_outlined),
         backgroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
@@ -102,6 +179,34 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+}
+
+class FacilityCircle extends StatelessWidget {
+  final String facility;
+
+  FacilityCircle(this.facility);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      width: 70,
+      height: 70,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.yellow,
+      ),
+      child: Center(
+        child: Text(
+          facility,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      ),
     );
   }
 }

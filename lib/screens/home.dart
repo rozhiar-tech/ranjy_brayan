@@ -2,10 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:http/http.dart' as http;
+import 'package:ranjy_brayan/screens/SearchResultScreen.dart';
+import 'package:ranjy_brayan/screens/companies.dart';
 import 'package:ranjy_brayan/screens/hotel_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ranjy_brayan/screens/profile.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+import 'package:flutter/services.dart' show rootBundle;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -18,44 +25,263 @@ class _HomeScreenState extends State<HomeScreen> {
   int _bottomNavIndex = 0;
   bool isLoading = true;
   String? userName;
+  String? userRole;
+  List<String> countries = [
+    "ناوچە",
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "Andorra",
+    "Angola",
+    "Anguilla",
+    "Antigua &amp; Barbuda",
+    "Argentina",
+    "Armenia",
+    "Aruba",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas",
+    "Bahrain",
+    "Bangladesh",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Belize",
+    "Benin",
+    "Bermuda",
+    "Bhutan",
+    "Bolivia",
+    "Bosnia &amp; Herzegovina",
+    "Botswana",
+    "Brazil",
+    "British Virgin Islands",
+    "Brunei",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Cambodia",
+    "Cameroon",
+    "Cape Verde",
+    "Cayman Islands",
+    "Chad",
+    "Chile",
+    "China",
+    "Colombia",
+    "Congo",
+    "Cook Islands",
+    "Costa Rica",
+    "Cote D Ivoire",
+    "Croatia",
+    "Cruise Ship",
+    "Cuba",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "Djibouti",
+    "Dominica",
+    "Dominican Republic",
+    "Ecuador",
+    "Egypt",
+    "El Salvador",
+    "Equatorial Guinea",
+    "Estonia",
+    "Ethiopia",
+    "Falkland Islands",
+    "Faroe Islands",
+    "Fiji",
+    "Finland",
+    "France",
+    "French Polynesia",
+    "French West Indies",
+    "Gabon",
+    "Gambia",
+    "Georgia",
+    "Germany",
+    "Ghana",
+    "Gibraltar",
+    "Greece",
+    "Greenland",
+    "Grenada",
+    "Guam",
+    "Guatemala",
+    "Guernsey",
+    "Guinea",
+    "Guinea Bissau",
+    "Guyana",
+    "Haiti",
+    "Honduras",
+    "Hong Kong",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran",
+    "Iraq",
+    "Ireland",
+    "Isle of Man",
+    "Israel",
+    "Italy",
+    "Jamaica",
+    "Japan",
+    "Jersey",
+    "Jordan",
+    "Kazakhstan",
+    "Kenya",
+    "Kuwait",
+    "Kyrgyz Republic",
+    "Laos",
+    "Latvia",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "Macau",
+    "Macedonia",
+    "Madagascar",
+    "Malawi",
+    "Malaysia",
+    "Maldives",
+    "Mali",
+    "Malta",
+    "Mauritania",
+    "Mauritius",
+    "Mexico",
+    "Moldova",
+    "Monaco",
+    "Mongolia",
+    "Montenegro",
+    "Montserrat",
+    "Morocco",
+    "Mozambique",
+    "Namibia",
+    "Nepal",
+    "Netherlands",
+    "Netherlands Antilles",
+    "New Caledonia",
+    "New Zealand",
+    "Nicaragua",
+    "Niger",
+    "Nigeria",
+    "Norway",
+    "Oman",
+    "Pakistan",
+    "Palestine",
+    "Panama",
+    "Papua New Guinea",
+    "Paraguay",
+    "Peru",
+    "Philippines",
+    "Poland",
+    "Portugal",
+    "Puerto Rico",
+    "Qatar",
+    "Reunion",
+    "Romania",
+    "Russia",
+    "Rwanda",
+    "Saint Pierre &amp; Miquelon",
+    "Samoa",
+    "San Marino",
+    "Satellite",
+    "Saudi Arabia",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Slovakia",
+    "Slovenia",
+    "South Africa",
+    "South Korea",
+    "Spain",
+    "Sri Lanka",
+    "St Kitts &amp; Nevis",
+    "St Lucia",
+    "St Vincent",
+    "St. Lucia",
+    "Sudan",
+    "Suriname",
+    "Swaziland",
+    "Sweden",
+    "Switzerland",
+    "Syria",
+    "Taiwan",
+    "Tajikistan",
+    "Tanzania",
+    "Thailand",
+    "Timor L'Este",
+    "Togo",
+    "Tonga",
+    "Trinidad &amp; Tobago",
+    "Tunisia",
+    "Turkey",
+    "Turkmenistan",
+    "Turks &amp; Caicos",
+    "Uganda",
+    "Ukraine",
+    "United Arab Emirates",
+    "United Kingdom",
+    "Uruguay",
+    "Uzbekistan",
+    "Venezuela",
+    "Vietnam",
+    "Virgin Islands (US)",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe"
+  ];
+  DateTime? checkInDate;
+  DateTime? checkOutDate;
+  int numberOfGuests = 2; // Default value
+  String selectedCountry = 'ناوچە';
 
   List<IconData> iconList = [
     Icons.home,
-    Icons.search,
-    Icons.favorite,
-    Icons.settings,
+    Icons.person,
+    Icons.house,
+    Icons.settings
   ];
+  void navigateToHomeScreen() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
+  }
+
+  List<dynamic> filterHotels(String selectedCountry) {
+    // Replace this with your actual filtering logic
+    List<dynamic> allHotels =
+        hotelsData; // Replace with your data fetching logic
+
+    // Filter hotels based on the selected country
+    List<dynamic> filteredHotels = allHotels
+        .where((hotel) => (hotel['country'] ?? '') == selectedCountry)
+        .toList();
+
+    return filteredHotels;
+  }
 
   List<dynamic> hotelsData = [];
-
   void fetchData() async {
-    final url = Uri.parse('https://api.makcorps.com/city');
-    final params = {
-      'cityid': '60763',
-      'pagination': '1',
-      'cur': 'USD',
-      'rooms': '1',
-      'adults': '2',
-      'checkin': '2024-02-25',
-      'checkout': '2024-03-25',
-      'api_key': '65d91a566a00880535251927',
-    };
-
     try {
-      final response = await http.get(url.replace(queryParameters: params));
+      String jsonString = await rootBundle.loadString('data/hotels.json');
+      Map<String, dynamic> jsonData = json.decode(jsonString);
 
-      if (response.statusCode == 200) {
-        setState(() {
-          hotelsData = json.decode(response.body);
-          isLoading = false;
-        });
-      } else {
-        print('Error: ${response.statusCode}');
-        print('Response body: ${response.body}');
+      // Extract the "hotels" list from the JSON data
+      List<dynamic> hotels = jsonData['hotels'];
+
+      setState(() {
+        hotelsData = hotels;
         isLoading = false;
-      }
+      });
     } catch (error) {
-      print('Exception: $error');
+      print('Error loading data: $error');
       isLoading = false;
     }
   }
@@ -73,6 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         setState(() {
           userName = userSnapshot['firstName'];
+          userRole = userSnapshot['userRole'];
         });
       } catch (e) {
         print('Error retrieving user data: $e');
@@ -80,29 +307,268 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void navigateToProfileScreen() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfileScreen(),
+      ),
+    );
+  }
+
+  void navigateToCompaniesScreen() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CompaniesScreen(),
+      ),
+    );
+  }
+
+  void showCountryPickerDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('شوێنی گەشتەکەت دیاری بکە'),
+          content: DropdownButton<String>(
+            value: selectedCountry,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedCountry = newValue!;
+              });
+            },
+            items: countries.map((String country) {
+              return DropdownMenuItem<String>(
+                value: country,
+                child: Text(country),
+              );
+            }).toList(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('دڵنیام'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showDatePickerDialog() async {
+    DateTimeRange? pickedDateRange = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (pickedDateRange != null) {
+      setState(() {
+        checkInDate = pickedDateRange.start;
+        checkOutDate = pickedDateRange.end;
+      });
+    }
+  }
+
+  void showGuestsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ژمارەی میوانەکان دیاری بکە'),
+          content: Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    if (numberOfGuests > 1) {
+                      numberOfGuests--;
+                    }
+                  });
+                },
+                icon: const Icon(Icons.remove),
+              ),
+              Text(numberOfGuests.toString()),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    numberOfGuests++;
+                  });
+                },
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('دڵنیام'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchData();
     checkSignedInUser();
   }
 
-  void changePage(index) {
-    switch (index) {
-      case 1:
-        break;
-      default:
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {},
-      ),
+      floatingActionButton: userRole == 'admin'
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () {
+                // Show form to add a new company for admin
+                // You can navigate to a new page or display a dialog to add a company
+                // For example:
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    TextEditingController nameController =
+                        TextEditingController();
+                    TextEditingController offersController =
+                        TextEditingController();
+                    File? image;
+
+                    return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                        return AlertDialog(
+                          title: const Text('زیادکردنی کۆمپانیا'),
+                          content: Column(
+                            children: [
+                              // Image Picker
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final ImagePicker _picker = ImagePicker();
+                                  XFile? pickedFile = await _picker.pickImage(
+                                      source: ImageSource.gallery);
+
+                                  if (pickedFile != null) {
+                                    setState(
+                                      () {
+                                        image = File(pickedFile.path);
+                                      },
+                                    );
+                                  }
+                                },
+                                child: const Text('وێنەیەک دیاری بکە'),
+                              ),
+                              // Display selected image
+                              image != null
+                                  ? Image.file(
+                                      image!,
+                                      scale: 1,
+                                      height: 50,
+                                    )
+                                  : const SizedBox.shrink(),
+                              // Name TextField
+                              TextField(
+                                controller: nameController,
+                                decoration:
+                                    const InputDecoration(labelText: 'ناو'),
+                              ),
+                              // Offers TextField
+                              TextField(
+                                controller: offersController,
+                                decoration: const InputDecoration(
+                                  labelText: 'ئۆفەرەکان (comma-separated)',
+                                ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('پاشگەز بونەوە'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                if (nameController.text.isNotEmpty &&
+                                    offersController.text.isNotEmpty &&
+                                    image != null) {
+                                  Reference storageReference =
+                                      FirebaseStorage.instance.ref().child(
+                                          'companies/${DateTime.now().toString()}');
+                                  UploadTask uploadTask =
+                                      storageReference.putFile(image!);
+
+                                  await uploadTask.whenComplete(() async {
+                                    String imageUrl =
+                                        await storageReference.getDownloadURL();
+
+                                    // Add the new company to Firestore
+                                    await FirebaseFirestore.instance
+                                        .collection('companies')
+                                        .add({
+                                      'imageUrl': imageUrl,
+                                      'name': nameController.text,
+                                      'offers': offersController.text
+                                          .split(',')
+                                          .map((e) => e.trim())
+                                          .toList(),
+                                    });
+
+                                    // Close the dialog
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  // Show an error message
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'تکایە هەموو ڕوکارەکان پڕ بکەرەوە')),
+                                  );
+                                }
+                              },
+                              child: const Text('زیادکردن'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            )
+          : FloatingActionButton(
+              child: const Icon(Icons.message),
+              onPressed: () {
+                // Show a message for non-admin users
+                // For example:
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('لەگەڵ ئادمین گفتوگۆبکە'),
+                      content: const Text(
+                        'تکایە پەیوەندی بەم ژمارە تەلەفونە بکە بۆ زیاد کردنی کۆمپانیا',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('دڵنیام'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: SafeArea(
         child: Padding(
@@ -123,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Text(
                     "بەخێربێیت $userName",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       color: Colors.black,
                     ),
@@ -143,45 +609,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle location filter
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    foregroundColor: Colors.black,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft:
-                            Radius.circular(12), // Adjust the top left corner
-                        bottomLeft: Radius.circular(
-                            12), // Adjust the bottom left corner
-                        topRight:
-                            Radius.circular(12), // Adjust the top right corner
-                        bottomRight: Radius.circular(
-                            12), // Adjust the bottom right corner
-                      ),
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 8),
-                          Text('ناوچە'),
-                        ],
-                      ),
-                      Icon(Icons.filter_list),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-              SizedBox(
-                width: 350,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle date filter
+                    showCountryPickerDialog();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.yellow,
@@ -195,69 +623,82 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.date_range),
-                      SizedBox(width: 8),
-                      Text('کات'),
+                      Row(
+                        children: [
+                          const Icon(Icons.search),
+                          const SizedBox(width: 8),
+                          Text(selectedCountry),
+                        ],
+                      ),
+                      const Icon(Icons.filter_list),
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(height: 8),
               SizedBox(
                 width: 350,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle guests filter
+                    showDatePickerDialog();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.yellow,
                     foregroundColor: Colors.black,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
-                        topLeft:
-                            Radius.circular(12), // Adjust the top left corner
-                        bottomLeft: Radius.circular(
-                            12), // Adjust the bottom left corner
-                        topRight:
-                            Radius.circular(12), // Adjust the top right corner
-                        bottomRight: Radius.circular(
-                            12), // Adjust the bottom right corner
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.date_range),
+                      const SizedBox(width: 8),
+                      Text(checkInDate == null
+                          ? 'کات'
+                          : '${DateFormat.yMd().format(checkInDate!)} - ${DateFormat.yMd().format(checkOutDate!)}'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: 350,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Handle guests filter
+                    showGuestsDialog();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    foregroundColor: Colors.black,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
                       ),
                     ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Row(
-                        children: [
-                          Icon(Icons.person), // User icon at the start
-                          SizedBox(width: 8),
-                          Text('میوان'),
-                        ],
-                      ),
                       Row(
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              // Handle decrease action
-                            },
-                            icon: const Icon(Icons.remove),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text(
-                              '2'), // Display the current number of guests or fetch it dynamically
-                          const SizedBox(width: 4),
-                          IconButton(
-                            onPressed: () {
-                              // Handle increase action
-                            },
-                            icon: const Icon(Icons.add),
-                          ),
+                          Icon(Icons.person),
+                          SizedBox(width: 8),
+                          Text('میوان - $numberOfGuests'),
                         ],
                       ),
+                      Icon(Icons.add),
                     ],
                   ),
                 ),
@@ -267,7 +708,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Handle guests filter
+                  if (selectedCountry == 'ناوچە') {
+                    return;
+                  }
+                  List<dynamic> filteredHotels = filterHotels(
+                      selectedCountry); // Replace with your filtering logic
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          SearchResultScreen(hotels: filteredHotels),
+                    ),
+                  );
                 },
                 child: const Text('گەڕان'),
               ),
@@ -275,13 +727,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 25,
               ),
               isLoading
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(),
                     )
                   : Expanded(
                       child: ListView.builder(
-                        itemCount:
-                            hotelsData.length - 1, // Exclude the last item
+                        itemCount: hotelsData.length,
                         itemBuilder: (context, index) {
                           final hotel = hotelsData[index];
                           if (hotel is Map<String, dynamic>) {
@@ -301,7 +752,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   children: [
                                     Image.network(
-                                      'https://media.istockphoto.com/id/104731717/photo/luxury-resort.jpg?s=612x612&w=0&k=20&c=cODMSPbYyrn1FHake1xYz9M8r15iOfGz9Aosy9Db7mI=',
+                                      hotel['photo1'] ??
+                                          '', // Update with your photo field
                                       height: 200,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -313,14 +765,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            hotel['name'] ?? '',
+                                            hotel['hotel_name'] ?? '',
                                             style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           const SizedBox(height: 8),
-                                          Text(hotel['telephone'] ?? ''),
+                                          Text(hotel['addressline1'] ?? ''),
                                           const SizedBox(height: 8),
                                           Row(
                                             children: [
@@ -331,8 +783,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         FontWeight.bold),
                                               ),
                                               Text(
-                                                hotel['reviews']['rating']
-                                                    .toString(),
+                                                hotel['rating_average']
+                                                        ?.toString() ??
+                                                    '',
                                                 style: const TextStyle(
                                                     color: Colors.yellow),
                                               ),
@@ -356,15 +809,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: AnimatedBottomNavigationBar(
-        icons:
-            iconList, // Make sure iconList is defined or replace it with your icon list
+        icons: iconList,
         activeIndex: _bottomNavIndex,
         activeColor: Colors.yellow,
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.verySmoothEdge,
         leftCornerRadius: 32,
         rightCornerRadius: 32,
-        onTap: (index) => setState(() => _bottomNavIndex = index),
+        onTap: (index) {
+          setState(() => _bottomNavIndex = index);
+          switch (index) {
+            case 0:
+              // Home
+              navigateToHomeScreen();
+              break;
+            case 1:
+              // Profile
+              navigateToProfileScreen();
+              break;
+            case 2:
+              // Companies
+              navigateToCompaniesScreen();
+              break;
+            case 3:
+              // Settings or other page
+              break;
+          }
+        },
       ),
     );
   }

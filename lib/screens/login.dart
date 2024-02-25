@@ -138,22 +138,19 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passwordController.text,
         );
 
-        // Save login status in SharedPreferences
         _saveLoginStatus(true);
 
-        // Navigate to the home screen on successful login
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const HomeScreen(),
           ),
         );
       } catch (e) {
-        // Handle login errors here
         print('Login Error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content:
-                Text('Login failed. Please check your email and password.'),
+                Text('چوونە ژوورەوە کێشەیەکی تیابوو تکایە دوبارەی بکەرەوە'),
             backgroundColor: Colors.red,
           ),
         );
