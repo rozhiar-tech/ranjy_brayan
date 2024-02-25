@@ -65,11 +65,7 @@ class CompanyDetailsScreen extends StatelessWidget {
         height: 150,
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          gradient: LinearGradient(
-            colors: [Colors.yellow, Colors.black], // Adjust gradient colors
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: Color(0xFF252526),
         ),
         padding: const EdgeInsets.all(16),
         child: Center(

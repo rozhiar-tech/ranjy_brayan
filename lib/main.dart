@@ -19,9 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, child) {
-        // Wrap the entire app with Directionality for RTL support
         return Directionality(
-          textDirection: TextDirection.rtl, // Set text direction to RTL
+          textDirection: TextDirection.rtl, 
           child: child!,
         );
       },

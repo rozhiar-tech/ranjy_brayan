@@ -23,10 +23,11 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: Color(0xFF252526),
       appBar: AppBar(
         title: Text(
           widget.hotel['hotel_name'] ?? '',
-          style: const TextStyle(fontSize: 20),
+          style: const TextStyle(fontSize: 20, color: Colors.white),
         ),
         backgroundColor: Colors.yellowAccent,
       ),
@@ -72,6 +73,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -81,6 +83,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 16,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -113,10 +116,12 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                       Text(
                         '${widget.hotel['addressline1']}, ${widget.hotel['city']},${widget.hotel['country']}',
                         overflow: TextOverflow.ellipsis,
-                        maxLines:
-                            2, 
+                        maxLines: 2,
                         style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.bold),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -133,6 +138,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                         'Check-in: ${widget.hotel['checkin']}, Check-out: ${widget.hotel['checkout']}',
                         style: const TextStyle(
                           fontSize: 14,
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -141,9 +147,9 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                   const Text(
                     'Facilities',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                   const SizedBox(height: 8),
                   Padding(

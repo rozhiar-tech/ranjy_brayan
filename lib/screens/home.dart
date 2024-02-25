@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<IconData> iconList = [
     Icons.home,
     Icons.person,
-    Icons.house,
+    Icons.place_rounded,
     Icons.settings
   ];
   void navigateToHomeScreen() {
@@ -255,8 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<dynamic> filterHotels(String selectedCountry) {
-    List<dynamic> allHotels =
-        hotelsData; 
+    List<dynamic> allHotels = hotelsData;
 
     List<dynamic> filteredHotels = allHotels
         .where((hotel) => (hotel['country'] ?? '') == selectedCountry)
@@ -421,6 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF252526),
       floatingActionButton: userRole == 'admin'
           ? FloatingActionButton(
               child: const Icon(Icons.add),
@@ -540,7 +540,11 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             )
           : FloatingActionButton(
-              child: const Icon(Icons.message),
+              backgroundColor: Color(0xFFFFD700),
+              child: const Icon(
+                Icons.message,
+                color: Colors.white,
+              ),
               onPressed: () {
                 // Show a message for non-admin users
                 // For example:
@@ -587,7 +591,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "بەخێربێیت $userName",
                     style: const TextStyle(
                       fontSize: 20,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(
@@ -595,11 +599,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.notification_add))
+                      icon: const Icon(
+                        Icons.notification_add,
+                        color: Colors.white,
+                      ))
                 ],
               ),
-              const SizedBox(
-                  height: 16), 
+              const SizedBox(height: 16),
               SizedBox(
                 width: 350,
                 child: ElevatedButton(
@@ -607,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     showCountryPickerDialog();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
+                    backgroundColor: Color(0xFFFFD700),
                     foregroundColor: Colors.black,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -641,7 +647,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     showDatePickerDialog();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
+                    backgroundColor: Color(0xFFFFD700),
                     foregroundColor: Colors.black,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -671,7 +677,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     showGuestsDialog();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
+                    backgroundColor: Color(0xFFFFD700),
                     foregroundColor: Colors.black,
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -701,12 +707,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 12,
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFFFD700),
+                    foregroundColor: Colors.black),
                 onPressed: () {
                   if (selectedCountry == 'ناوچە') {
                     return;
                   }
-                  List<dynamic> filteredHotels = filterHotels(
-                      selectedCountry); 
+                  List<dynamic> filteredHotels = filterHotels(selectedCountry);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -741,6 +749,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                               child: Card(
+                                color: Color(0xFF363636),
                                 elevation: 3,
                                 margin: const EdgeInsets.all(8),
                                 child: Column(
@@ -761,27 +770,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text(
                                             hotel['hotel_name'] ?? '',
                                             style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
                                           ),
                                           const SizedBox(height: 8),
-                                          Text(hotel['addressline1'] ?? ''),
+                                          Text(
+                                            hotel['addressline1'] ?? '',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
                                           const SizedBox(height: 8),
                                           Row(
                                             children: [
                                               const Text(
                                                 'Rating: ',
                                                 style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white,
+                                                    fontSize: 20),
                                               ),
                                               Text(
                                                 hotel['rating_average']
                                                         ?.toString() ??
                                                     '',
                                                 style: const TextStyle(
-                                                    color: Colors.yellow),
+                                                    color: Color(0xFFFFD700),
+                                                    fontSize: 20),
                                               ),
                                             ],
                                           ),
@@ -805,11 +820,12 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: AnimatedBottomNavigationBar(
         icons: iconList,
         activeIndex: _bottomNavIndex,
-        activeColor: Colors.yellow,
+        activeColor: Colors.white,
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.verySmoothEdge,
         leftCornerRadius: 32,
         rightCornerRadius: 32,
+        backgroundColor: Color(0xFFFFD700),
         onTap: (index) {
           setState(() => _bottomNavIndex = index);
           switch (index) {
