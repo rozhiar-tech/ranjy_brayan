@@ -20,7 +20,7 @@ class CompanyDetailsScreen extends StatelessWidget {
               height: 600,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(18.0),
                   bottomRight: Radius.circular(18.0),
                 ),

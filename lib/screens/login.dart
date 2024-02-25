@@ -106,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    // Navigate to the SignupScreen
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => SignupScreen(),

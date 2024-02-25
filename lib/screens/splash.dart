@@ -28,7 +28,6 @@ class _SplashState extends State<Splash> {
 
   Future<void> initSharedPreferences() async {
     _prefs = await SharedPreferences.getInstance();
-    // Check if user is logged in
     setState(() {
       isLoggedIn = _prefs.getBool('isLoggedIn') ?? false;
     });

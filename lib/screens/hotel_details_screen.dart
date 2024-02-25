@@ -114,7 +114,7 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                         '${widget.hotel['addressline1']}, ${widget.hotel['city']},${widget.hotel['country']}',
                         overflow: TextOverflow.ellipsis,
                         maxLines:
-                            2, // Set the maximum number of lines you want to display
+                            2, 
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.bold),
                       ),
@@ -158,7 +158,6 @@ class _HotelDetailsScreenState extends State<HotelDetailsScreen> {
                           FacilityCircle('Outdoor Pool'),
                           FacilityCircle('Spa'),
                           FacilityCircle('Massage'),
-                          // Add more facilities as needed
                         ],
                       ),
                     ),

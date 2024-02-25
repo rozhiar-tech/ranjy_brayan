@@ -211,8 +211,8 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         );
       } catch (e) {
-        // Handle signup errors here
         print('Signup Error: $e');
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Signup failed. Please try again.'),

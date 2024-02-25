@@ -9,14 +9,14 @@ class MoreDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('More Details'),
+        title: const Text('More Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Overview',
               style: TextStyle(
                 fontSize: 24,
@@ -26,7 +26,7 @@ class MoreDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               overview,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
               ),
             ),

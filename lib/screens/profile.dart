@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(),
+        builder: (context) => const HomeScreen(),
       ),
     );
   }
@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ProfileScreen(),
+        builder: (context) => const ProfileScreen(),
       ),
     );
   }
@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => CompaniesScreen(),
+        builder: (context) => const CompaniesScreen(),
       ),
     );
   }
@@ -71,12 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _userDetails = UserDetails(
           displayName: userSnapshot['firstName'] ?? '',
           email: userSnapshot['email'] ?? '',
-          // Add other user details as needed
         );
       });
     } catch (e) {
       print('Error fetching user details: $e');
-      // Handle error appropriately
     }
   }
 
@@ -150,7 +148,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text('ئیمەیڵ: ${_userDetails!.email}'),
-                // Add other user details as needed
               ],
             ),
           ),

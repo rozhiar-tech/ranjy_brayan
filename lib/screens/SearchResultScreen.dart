@@ -16,7 +16,6 @@ class SearchResultScreen extends StatelessWidget {
         itemCount: hotels.length,
         itemBuilder: (context, index) {
           final hotel = hotels[index];
-          // Implement the UI to display each hotel in the search results
           return InkWell(
             onTap: () {
               Navigator.push(
@@ -28,14 +27,13 @@ class SearchResultScreen extends StatelessWidget {
             },
             child: ListTile(
               leading: Image.network(
-                hotel['photo1'] ?? '', // Update with your photo field
+                hotel['photo1'] ?? '', 
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
               ),
               title: Text(hotel['hotel_name'] ?? ''),
               subtitle: Text(hotel['addressline1'] ?? ''),
-              // Add more details as needed
             ),
           );
         },

@@ -255,11 +255,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<dynamic> filterHotels(String selectedCountry) {
-    // Replace this with your actual filtering logic
     List<dynamic> allHotels =
-        hotelsData; // Replace with your data fetching logic
+        hotelsData; 
 
-    // Filter hotels based on the selected country
     List<dynamic> filteredHotels = allHotels
         .where((hotel) => (hotel['country'] ?? '') == selectedCountry)
         .toList();
@@ -273,7 +271,6 @@ class _HomeScreenState extends State<HomeScreen> {
       String jsonString = await rootBundle.loadString('data/hotels.json');
       Map<String, dynamic> jsonData = json.decode(jsonString);
 
-      // Extract the "hotels" list from the JSON data
       List<dynamic> hotels = jsonData['hotels'];
 
       setState(() {
@@ -290,7 +287,6 @@ class _HomeScreenState extends State<HomeScreen> {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      // User is signed in, retrieve their name from Firestore
       try {
         DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
             .collection('users')
@@ -603,12 +599,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(
-                  height: 16), // Add spacing between the Row and the Buttons
+                  height: 16), 
               SizedBox(
                 width: 350,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle location filter
                     showCountryPickerDialog();
                   },
                   style: ElevatedButton.styleFrom(
@@ -673,7 +668,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 350,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle guests filter
                     showGuestsDialog();
                   },
                   style: ElevatedButton.styleFrom(
@@ -712,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return;
                   }
                   List<dynamic> filteredHotels = filterHotels(
-                      selectedCountry); // Replace with your filtering logic
+                      selectedCountry); 
                   Navigator.push(
                     context,
                     MaterialPageRoute(
