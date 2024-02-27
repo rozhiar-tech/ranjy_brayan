@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:ranjy_brayan/screens/SearchResultScreen.dart';
 import 'package:ranjy_brayan/screens/companies.dart';
+import 'package:ranjy_brayan/screens/companyProfile.dart';
 import 'package:ranjy_brayan/screens/hotel_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -843,6 +844,12 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
             case 3:
               // Settings or other page
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CompanyProfile(),
+                ),
+              );
               break;
           }
         },
