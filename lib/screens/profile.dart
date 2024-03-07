@@ -10,6 +10,7 @@ import 'package:ranjy_brayan/screens/admin.dart';
 import 'package:ranjy_brayan/screens/companies.dart';
 import 'package:ranjy_brayan/screens/companyProfile.dart';
 import 'package:ranjy_brayan/screens/home.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -121,6 +122,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     } catch (e) {
       print('Error fetching user details: $e');
+    }
+  }
+
+  final Uri _url = Uri.parse(
+      'https://www.facebook.com/profile.php?id=100063620874050&mibextid=LQQJ4d');
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
     }
   }
 
@@ -468,12 +478,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(right: 8),
-                        child: const CircleAvatar(
-                          backgroundColor: Colors.blue,
-                          radius: 30,
-                          child: Icon(
-                            Icons.facebook,
-                            color: Colors.white,
+                        child: GestureDetector(
+                          onTap: _launchUrl,
+                          child: const CircleAvatar(
+                            backgroundColor: Colors.blue,
+                            radius: 30,
+                            child: Icon(
+                              Icons.facebook,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
